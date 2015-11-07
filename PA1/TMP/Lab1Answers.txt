@@ -1,0 +1,11 @@
+Original:
+Advantage: the process with highest priority run first. When you have some urgent task (highest prority), this policy can finish it within the shortest time.
+Disadvantage: casue starvations.
+
+Linux:
+Advantage: prevent starvations.
+Disadvantage: When you put some urgent tasks, it may still take a lot time to finish.
+
+Multiq:
+Advantage: With two queues, you can manage processes more properly. If the task is urgent, you can put it into the real-time queue; otherwise the normal queue.
+Disadvantage: In the real-time queue, starvation problem still exists.

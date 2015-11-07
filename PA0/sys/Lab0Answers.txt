@@ -1,0 +1,67 @@
+1. Assuming the XINU text begins at address 0x0, draw a rough diagram of XINU's memory layout with addresses derived from your experimental measurements. Include the information you uncovered from running your version of printsegaddress() and printprocstks().
+
+|----------| begin [0x00000000]
+|   text   |
+|----------| etext [0x00008686]
+|   data   |
+|----------| edata [0x0000ace0]
+|   BSS    |
+|----------| end [0x00010938]
+|   heap   |
+|----------|
+|   free   |
+|  memory  |
+|----------| stakc limit [0x00ffdffc]
+|   stack  |
+|   for    | stack pointer [0x00ffefa0]
+|   proc   |
+|   main   |
+|----------| base [0x00ffeff8]
+|   free   |
+|  memory  |
+|----------|
+
+2. What is the difference in stack top address before and after calling printtos()? Draw a diagram to illustrate what are the contents of the items pushed into the stack between these two time points.
+After calling function printtos(), the top of stack will decrease by 2.
+
+|----------|
+|   ebp    |
+|----------| esp after calling printtos()
+|  return  |
+|  address |
+|----------|
+|  param1  |
+|----------| esp before calling printtos()
+|  param2  |
+|----------|
+|  param3  |
+|----------|
+|  param4  |
+|----------|
+|  param5  |
+|----------|
+|  param6  |
+|----------|
+
+3. Which byte order is adopted in the host machine that we are using? How did you find out?
+Little endian. I tested it with the program below:
+unsigned char b[4] = { 0x00, 0x00, 0x00, 0x01 };
+int *x = b;
+if( x == 1 )
+{
+    printf( "Big Endian.\n" );
+}
+else
+{
+    printf( "Little Endian.\n" );
+}
+
+4. Briefly describe the mov, push, pusha, pop, and popa instructions in the x86.
+mov: moves data between registers and memories. It has two parameters, the first operand is the destination and the second operand is the source.
+push: takes one parameter and places it onto the top of the stack. It will fisrt sub esp by 4, then place the operand to the location specified by esp.
+pusha: push 16-bit registers in the order of ax, cx, dx, bx, sp, bp, si, di.
+pop: remove a 32-bit data from the top of stack and places it to the location specified by the operand. It will first retrieve the data, then increase esp by 4.
+popa: move 16-bit values out of stack, into registers in the order of di, si, bp, sp, bx, dx, cx, ax.
+
+5. In a stack frame, local variables are stored below the top of the stack. In task 3, does your result show all the local variables declared in your printtos function? If not, can you explain that? (hint: try to disable the compiler optimization by specifing -O0 in your Makefile)
+No. If we turn on the compiler optimization, the compiler may change the orders of instructions. Also, some unused local variables are eliminated. As a result, some variables may never get pushed, or get pushed much earlier/later than expected. 
